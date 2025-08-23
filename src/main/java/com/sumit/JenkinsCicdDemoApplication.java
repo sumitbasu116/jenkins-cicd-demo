@@ -19,5 +19,4 @@ public class JenkinsCicdDemoApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(JenkinsCicdDemoApplication.class, args);
 	}
-
 }
