@@ -1,39 +1,52 @@
-pipeline{
+pipeline {
     agent any
-    tools{
+    tools {
         maven "maven"
     }
-    stages{
-        stage("SCM checkout"){
-            steps{
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/sumitbasu116/jenkins-cicd-demo.git']])
+    stages {
+        stage("SCM checkout") {
+            steps {
+                checkout scmGit(
+                    branches: [[name: '*/main']], 
+                    extensions: [], 
+                    userRemoteConfigs: [[url: 'https://github.com/sumitbasu116/jenkins-cicd-demo.git']]
+                )
             }
         }
-        stage("Build Process"){
-            steps{
+        stage("Build Process") {
+            steps {
                 sh 'mvn clean install'
             }
         }
-        stage("Deploy To Container"){
-            steps{
-                deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'tomcat-cred-local', path: '', url: 'http://localhost:8088/')], contextPath: 'jenkins-cicd-demo-0.0.1-SNAPSHOT', war: '**/*.war'
-            }
-        }
-        stage("Notification"){
-            steps{
-                deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'tomcat-cred-local', path: '', url: 'http://localhost:8088/')], contextPath: 'jenkins-cicd-demo-0.0.1-SNAPSHOT', war: '**/*.war'
+        stage("Deploy To Container") {
+            steps {
+                deploy adapters: [
+                    tomcat9(
+                        alternativeDeploymentContext: '', 
+                        credentialsId: 'tomcat-cred-local', 
+                        path: '', 
+                        url: 'http://localhost:8088/'
+                    )
+                ], contextPath: 'jenkins-cicd-demo', war: '**/*.war'
             }
         }
     }
-    post{
-        always{
-            emailext attachLog: true, body: '''<html>
-    <body>
-    <p>Build Status: ${BUILD_STATUS}</p>
-    <p>Build Number: ${BUILD_NUMBER}</p>
-    <p>Check the <a href="${BUILD_URL}"> console output</a>.</p>
-    </body>
-</html>''', mimeType: 'text/html', replyTo: 'sumitbasu116@gmail.com', subject: 'Pipeline Status: ${BUILD_NUMBER}', to: 'sumitbasu116@gmail.com'
-        }
+    post {
+  always {
+    script {
+      echo "➡ post:always reached"
+      echo "currentBuild.currentResult = ${currentBuild.currentResult}"   // e.g. SUCCESS/FAILURE/UNSTABLE/ABORTED
+      echo "currentBuild.result        = ${currentBuild.result}"          // sometimes null until finalized
     }
+    emailext(
+      from: 'sumitbasu19@gmail.com',
+      to:   'sumitbasu19@gmail.com',
+      subject: "Pipeline #${BUILD_NUMBER} result: ${currentBuild.currentResult}",
+      body: "Job: ${JOB_NAME}\nBuild: ${BUILD_NUMBER}\nURL: ${BUILD_URL}\nResult: ${currentBuild.currentResult}",
+      mimeType: 'text/plain',
+      attachLog: false   // keep it tiny for this test
+    )
+    script { echo "📧 emailext attempted (post:always)" }
+  }
+}
 }
