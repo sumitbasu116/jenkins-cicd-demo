@@ -53,7 +53,7 @@ pipeline {
                         path: '', 
                         url: 'http://localhost:8088/'
                     )
-                ], contextPath: 'jenkins-cicd-demo', war: '**/*.war'
+                ], contextPath: '', war: '**/*.war'
             }
         }
     }
