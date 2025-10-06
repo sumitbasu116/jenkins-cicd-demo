@@ -2,6 +2,11 @@ pipeline {
     agent any
     environment {
         PATH = "/usr/local/bin:/usr/bin:/bin"
+        APP_NAME = "spring-jenkins-docker-demo"
+        RELEASE_NO = "1.0.0"
+        DOCKER_USER = "sumitbasulabs1162"
+        IMAGE_NAME = "${DOCKER_USER}"+"/"+"${APP_NAME}"
+        IMAGE_TAG = "${RELEASE_NO}.${BUILD_NUMBER}"
     }
     tools {
         maven "maven"
@@ -48,14 +53,14 @@ pipeline {
         }
 		stage("Build Docker Image") {
             steps {
-                sh 'docker build -t sumitbasulabs1162/spring-jenkins-docker-demo:1.0 .'
+                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
             }
         }
         stage("Deploy to Docker Hub"){
             steps {
                 withCredentials([string(credentialsId: 'jen_dock_id', variable: 'J_DOCKER_CRED')]) {
                     sh "echo '${J_DOCKER_CRED}' | docker login -u sumitbasulabs1162 --password-stdin"
-                    sh "docker push sumitbasulabs1162/spring-jenkins-docker-demo:1.0"
+                    sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
                 }
             }
         }
