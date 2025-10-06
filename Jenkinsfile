@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    environment {
+        PATH = "/usr/local/bin:/usr/bin:/bin"
+    }
     tools {
         maven "maven"
     }
@@ -18,6 +21,7 @@ pipeline {
                 sh 'mvn clean install'
             }
         }
+<<<<<<< Updated upstream
         stage("Deploy To Container") {
             steps {
                 deploy adapters: [
@@ -28,8 +32,22 @@ pipeline {
                         url: 'http://localhost:8088/'
                     )
                 ], contextPath: 'jenkins-cicd-demo', war: '**/*.war'
+=======
+		stage("Build Docker Image") {
+            steps {
+                sh 'docker build -t sumitbasulabs1162/spring-jenkins-docker-demo:1.0 .'
+>>>>>>> Stashed changes
             }
         }
+        stage("Deploy to Docker Hub"){
+            steps {
+                withCredentials([string(credentialsId: 'jen_dock_id', variable: 'J_DOCKER_CRED')]) {
+                    sh "echo '${J_DOCKER_CRED}' | docker login -u sumitbasulabs1162 --password-stdin"
+                    sh "docker push sumitbasulabs1162/spring-jenkins-docker-demo:1.0"
+                }
+            }
+        }
+         
     }
     post {
   always {
