@@ -11,7 +11,7 @@
 	<groupId>com.sumit</groupId>
 	<artifactId>jenkins-cicd-demo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>jenkins-cicd-demo</name>
 	<description>Demonstrate Jenkins CI &amp;amp; CD</description>
 	<url/>
@@ -35,7 +35,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
+	<dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-tomcat</artifactId>
+        <scope>provided</scope>
+    </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -50,6 +54,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+		<finalName>jenkinsCiCdDemo</finalName>
 	</build>
 
 </project>
